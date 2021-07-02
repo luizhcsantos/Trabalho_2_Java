@@ -15,6 +15,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
     private double probQ;
     private JTextField textFieldCarros, textFieldVoltas, textFieldQuebra, textFieldAbast;
     private JTable tabela;
+    private JPanel painelFiguras = null;
 
     public InterfaceCorrida() {
 
@@ -27,10 +28,9 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
     private void createGUI() {
 
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
-
         JPanel painel = new JPanel();
         JPanel painelTb = new JPanel();
+        painelFiguras = new JPanel();
         painel.setLayout(new GridLayout(6, 2));
 
         JLabel labelCarros = new JLabel("Nº carros");
@@ -59,6 +59,10 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
         textFieldAbast.setInputVerifier(new validVerifier());
 
         JButton botao = new JButton("Iniciar corrida");
+
+        painelFiguras.setLayout(new BoxLayout(painelFiguras, BoxLayout.Y_AXIS));
+        painelFiguras.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
         //eventos = Collections.synchronizedList(new ArrayList<>());
         DefaultTableModel defaultTableModel = new DefaultTableModel(new Object[]{"Carros", "Colocação"}, 0);
         tabela = new JTable(defaultTableModel);
@@ -78,8 +82,9 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
         painelTb.add(barraRolagem);
 
-        add(painel);
-        add(painelTb);
+        add(painel, BorderLayout.WEST);
+        add(painelTb, BorderLayout.EAST);
+        add(painelFiguras, BorderLayout.CENTER);
     }
 
     @Override
@@ -105,11 +110,13 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
         System.out.println("probQuebra: "+probQ+" probA: "+probA);
 
         for (int i=0; i< numCarros; i++) {
-            t = new Thread(new CarroCorrida("CARRO_" + (i+1),
-                                             DISTANCIA,
-                                             probQ, probA,
-                                             df));
-            t.start();
+            if (painelFiguras != null) {
+                t = new Thread(new CarroCorrida("CARRO_" + (i + 1),
+                        DISTANCIA,
+                        probQ, probA,
+                        df, painelFiguras));
+                t.start();
+            }
         }
     }
 

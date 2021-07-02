@@ -7,10 +7,10 @@ public class Principal {
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
-            MainPanelFrame mainPanelFrame = new MainPanelFrame();
-            mainPanelFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            mainPanelFrame.pack();
-            mainPanelFrame.setVisible(true);
+            InterfaceCorrida interfaceCorrida = new InterfaceCorrida();
+            interfaceCorrida.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            interfaceCorrida.pack();
+            interfaceCorrida.setVisible(true);
         });
     }
 }
