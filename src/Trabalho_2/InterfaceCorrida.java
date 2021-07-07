@@ -15,7 +15,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
     private double probQ;
     private JTextField textFieldCarros, textFieldVoltas, textFieldQuebra, textFieldAbast;
     private JTable tabela;
-    private JPanel painelFiguras = null;
+    private JPanel painelFiguras;
 
     public InterfaceCorrida() {
 
@@ -62,6 +62,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
         painelFiguras.setLayout(new BoxLayout(painelFiguras, BoxLayout.Y_AXIS));
         painelFiguras.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        painelFiguras.setPreferredSize(new Dimension(300, 400));
 
         //eventos = Collections.synchronizedList(new ArrayList<>());
         DefaultTableModel defaultTableModel = new DefaultTableModel(new Object[]{"Carros", "Colocação"}, 0);
@@ -82,16 +83,20 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
         painelTb.add(barraRolagem);
 
+        painel.add(Box.createVerticalStrut(getHeight()-1));
         add(painel, BorderLayout.WEST);
+        //add(Box.createVerticalStrut(getHeight()-1));
         add(painelTb, BorderLayout.EAST);
+        painelTb.add(Box.createVerticalStrut(getHeight()-1));
         add(painelFiguras, BorderLayout.CENTER);
+        painelFiguras.add(Box.createVerticalStrut(getHeight()-1));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        // cada volta equivale a 100 millisegundos
-        int distanciaVolta = 100;
+        // cada volta equivale a 1000 millisegundos
+        int distanciaVolta = 1000;
         int DISTANCIA;
         Thread t;
 
@@ -107,16 +112,20 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
         probQ = (Double.parseDouble(textFieldQuebra.getText()));
         DISTANCIA = numVoltas*distanciaVolta;
 
-        System.out.println("probQuebra: "+probQ+" probA: "+probA);
-
         for (int i=0; i< numCarros; i++) {
-            if (painelFiguras != null) {
-                t = new Thread(new CarroCorrida("CARRO_" + (i + 1),
-                        DISTANCIA,
-                        probQ, probA,
-                        df, painelFiguras));
-                t.start();
-            }
+
+            JPanel painelCarro = new JPanel();
+            painelCarro.setBorder(BorderFactory.createLineBorder(Color.blue));
+            painelCarro.setBackground(Color.WHITE);
+            painelCarro.setPreferredSize(new Dimension(painelFiguras.getWidth()/numCarros,
+                    painelFiguras.getHeight()));
+            painelCarro.setLayout(null);
+            painelFiguras.add(painelCarro);
+            painelCarro.revalidate();
+            painelFiguras.revalidate();
+
+            t = new Thread(new CarroCorrida("CARRO_" + (i + 1), DISTANCIA, probQ, probA, df, painelCarro));
+            t.start();
         }
     }
 
