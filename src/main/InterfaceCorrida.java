@@ -65,7 +65,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
         painelFiguras.setLayout(new BoxLayout(painelFiguras, BoxLayout.Y_AXIS));
         painelFiguras.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153)));
-        painelFiguras.setPreferredSize(new Dimension(530, 390));
+        painelFiguras.setPreferredSize(new Dimension(600, 390));
 
         GroupLayout painelLayout = new GroupLayout(painel);
         painel.setLayout(painelLayout);
@@ -144,11 +144,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
                                         .addComponent(painel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
         );
-
         pack();
-
-        //eventos = Collections.synchronizedList(new ArrayList<>());
-
     }
 
     @Override
@@ -186,8 +182,9 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
             JPanel painelCarro = new JPanel();
             painelCarro.setBackground(Color.darkGray);
-            painelCarro.setPreferredSize(new Dimension((painelFiguras.getWidth())-100,
-                    painelFiguras.getHeight()/numCarros));
+            painelCarro.setSize(new Dimension(500,
+                    painelFiguras.getHeight()/numCarros+1));
+            painelCarro.setBorder(BorderFactory.createDashedBorder(new Color(153, 153, 153)));
             painelCarro.setLayout(null);
             painelFiguras.add(painelCarro);
             painelFiguras.revalidate();

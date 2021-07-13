@@ -23,6 +23,7 @@ public class CarroCorrida implements Runnable {
     private int mov;
     private double probQuebra;
     private double probAbastecimento;
+    private static boolean estaDormindo;
 
     private final JLabel img = new JLabel();
     private final JPanel painelCarro;
@@ -31,11 +32,7 @@ public class CarroCorrida implements Runnable {
 
     private final DefaultTableModel tableModel;
 
-    public CarroCorrida(String nome, int distanciaTotalPercorrida,
-                        double probQuebra, double probAbastecimento,
-                        DefaultTableModel tableModel,
-                        JPanel painelCarro) {
-
+    public CarroCorrida(String nome, int distanciaTotalPercorrida, double probQuebra, double probAbastecimento, DefaultTableModel tableModel, JPanel painelCarro) {
 
         this.nome = nome;
         this.distanciaTotalPercorrida = distanciaTotalPercorrida;
@@ -43,6 +40,7 @@ public class CarroCorrida implements Runnable {
         colocacao = 0;
         row = new AtomicInteger(0);
         mov = 0;
+        estaDormindo = true;
 
         if (probQuebra > 1.0 && probQuebra <= 100.0)
             this.probQuebra = probQuebra/100.0;
@@ -53,7 +51,7 @@ public class CarroCorrida implements Runnable {
         this.tableModel = tableModel;
 
         img.setText("");
-        img.setPreferredSize(new Dimension(100, 50));
+        img.setPreferredSize(new Dimension(90, 50));
         String pathname = "/resources/images/";
         String imgName = "car"+ (new Random().nextInt(6-1)+1)+".png";
         try {
@@ -67,11 +65,6 @@ public class CarroCorrida implements Runnable {
         size = img.getPreferredSize();
         img.setBounds(insets.left, insets.top, size.width, size.height);
     }
-
-    /*public void carroCorrendoSituacao() {
-        out.println("o carro "+nome+" moveu-se "+mov+" metros " +
-                "e já percorreu "+distanciaPercorrida+" metros");
-    }*/
 
     public void carrosCorrendo() {
         int MOV_MAXIMO = 50;
@@ -94,12 +87,11 @@ public class CarroCorrida implements Runnable {
                             colocacao + "º colocado",
                     row.intValue(),
                     1);
-            if (colocacao == 1)
-                painelCarro.setBackground(Color.GREEN);
-            if (colocacao == 2)
-                painelCarro.setBackground(Color.BLUE);
-            if (colocacao == 3)
-                painelCarro.setBackground(Color.YELLOW);
+            switch (colocacao) {
+                case 1 -> painelCarro.setBackground(Color.GREEN);
+                case 2 -> painelCarro.setBackground(Color.BLUE);
+                case 3 -> painelCarro.setBackground(Color.YELLOW);
+            }
         }
     }
 
@@ -111,11 +103,13 @@ public class CarroCorrida implements Runnable {
                 carrosCorrendo();
                 ProgressoWorker pw = new ProgressoWorker(distanciaTotalPercorrida, painelCarro, img);
                 pw.execute();
+                estaDormindo = false;
             } else {
                 carroDesacelerando();
                 try {
                     int sleepTime = 100; // milissegundos
                     sleep(l * sleepTime);
+                    estaDormindo = true;
                     TabelaWorker tw = new TabelaWorker(l);
                     tw.execute();
                 } catch (InterruptedException e) {
@@ -161,6 +155,7 @@ public class CarroCorrida implements Runnable {
         JPanel painelCarro;
         JLabel img;
         double novaPos;
+        int OFFSET = 10;
 
 
         public ProgressoWorker(int distanciaTotal, JPanel painelCarro, JLabel img) {
@@ -176,12 +171,14 @@ public class CarroCorrida implements Runnable {
             double percent;
             percent = (distanciaPercorrida/distanciaTotal)*100;
             novaPos = ((painelCarro.getWidth()*percent)/distanciaTotal)*100;
-            return novaPos;
+            return novaPos+OFFSET;
         }
 
         @Override
         protected void done() {
-            img.setBounds((int) (insets.left + novaPos), insets.top, size.width, size.height);
+            if (!estaDormindo) {
+                img.setBounds((int) (insets.left + novaPos)-img.getWidth(), insets.top, size.width, size.height);
+            }
         }
     }
 
