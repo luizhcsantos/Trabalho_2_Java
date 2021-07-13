@@ -1,7 +1,5 @@
 package Trabalho_2;
 
-import jdk.dynalink.linker.LinkerServices;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;

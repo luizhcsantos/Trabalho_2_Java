@@ -31,7 +31,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
         JPanel painel = new JPanel();
         JPanel painelTb = new JPanel();
         painelFiguras = new JPanel();
-        painel.setLayout(new GridLayout(6, 2));
+        //painel.setLayout(new GridLayout(6, 2));
 
         JLabel labelCarros = new JLabel("Nº carros");
         labelCarros.setToolTipText("Número mínimo de carros: 5 ");
@@ -58,18 +58,100 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
         textFieldAbast.setName("probA");
         textFieldAbast.setInputVerifier(new validVerifier());
 
-        JButton botao = new JButton("Iniciar corrida");
+        JButton button = new JButton("Iniciar Nova Corrida");
+        button.addActionListener(this);
 
-        painelFiguras.setLayout(new BoxLayout(painelFiguras, BoxLayout.Y_AXIS));
-        painelFiguras.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        javax.swing.GroupLayout painelLayout = new javax.swing.GroupLayout(painel);
+        painel.setLayout(painelLayout);
+        painelLayout.setHorizontalGroup(
+                painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(painelLayout.createSequentialGroup()
+                                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(painelLayout.createSequentialGroup()
+                                                .addGap(23, 23, 23)
+                                                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(labelCarros)
+                                                        .addComponent(labelVoltas)
+                                                        .addComponent(labelQuebra)
+                                                        .addComponent(labelAbast))
+                                                .addGap(29, 29, 29)
+                                                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(textFieldVoltas, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(textFieldQuebra, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(textFieldCarros, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(textFieldAbast, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(painelLayout.createSequentialGroup()
+                                                .addGap(53, 53, 53)
+                                                .addComponent(button)))
+                                .addContainerGap(34, Short.MAX_VALUE))
+        );
+        painelLayout.setVerticalGroup(
+                painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(painelLayout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(labelCarros)
+                                        .addComponent(textFieldCarros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(39, 39, 39)
+                                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(labelVoltas)
+                                        .addComponent(textFieldVoltas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(48, 48, 48)
+                                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(labelQuebra)
+                                        .addComponent(textFieldQuebra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(40, 40, 40)
+                                .addGroup(painelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(labelAbast)
+                                        .addComponent(textFieldAbast, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(42, 42, 42)
+                                .addComponent(button)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        DefaultTableModel defaultTableModel = new DefaultTableModel(new Object[]{"Carros", "Colocação"}, 0);
+        tabela = new JTable();
+        //barraRolagem.setPreferredSize(new Dimension(300, 400));
+        tabela.setModel(defaultTableModel);
+        JScrollPane barraRolagem = new JScrollPane(tabela);
+        barraRolagem.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
+        barraRolagem.setViewportView(tabela);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(painel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(painelFiguras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(barraRolagem, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(29, 29, 29))
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(barraRolagem, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                                        .addComponent(painelFiguras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(painel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())
+        );
+
+        pack();
+
+        //JButton botao = new JButton("Iniciar corrida");
+
+        painelFiguras.setLayout(new javax.swing.BoxLayout(painelFiguras, javax.swing.BoxLayout.Y_AXIS));
+        painelFiguras.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         painelFiguras.setPreferredSize(new Dimension(300, 400));
 
         //eventos = Collections.synchronizedList(new ArrayList<>());
-        DefaultTableModel defaultTableModel = new DefaultTableModel(new Object[]{"Carros", "Colocação"}, 0);
-        tabela = new JTable(defaultTableModel);
-        JScrollPane barraRolagem = new JScrollPane(tabela);
 
-        painel.add(labelCarros);
+
+        /*painel.add(labelCarros);
         painel.add(textFieldCarros);
         painel.add(labelVoltas);
         painel.add(textFieldVoltas);
@@ -89,7 +171,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
         add(painelTb, BorderLayout.EAST);
         painelTb.add(Box.createVerticalStrut(getHeight()-1));
         add(painelFiguras, BorderLayout.CENTER);
-        painelFiguras.add(Box.createVerticalStrut(getHeight()-1));
+        painelFiguras.add(Box.createVerticalStrut(getHeight()-1));*/
     }
 
     @Override
@@ -118,10 +200,10 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
             painelCarro.setBorder(BorderFactory.createLineBorder(Color.blue));
             painelCarro.setBackground(Color.WHITE);
             painelCarro.setPreferredSize(new Dimension(painelFiguras.getWidth()/numCarros,
-                    painelFiguras.getHeight()));
+                    painelFiguras.getHeight()-1));
             painelCarro.setLayout(null);
             painelFiguras.add(painelCarro);
-            painelCarro.revalidate();
+            //painelCarro.revalidate();
             painelFiguras.revalidate();
 
             t = new Thread(new CarroCorrida("CARRO_" + (i + 1), DISTANCIA, probQ, probA, df, painelCarro));
