@@ -1,9 +1,11 @@
-package Trabalho_2;
+package main;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,7 +54,13 @@ public class CarroCorrida implements Runnable {
 
         img.setText("");
         img.setPreferredSize(new Dimension(100, 50));
-        img.setIcon(new ImageIcon(String.valueOf(new File("car.png"))));
+        String pathname = "/resources/images/";
+        String imgName = "car"+ (new Random().nextInt(6-1)+1)+".png";
+        try {
+            img.setIcon(new ImageIcon(ImageIO.read(this.getClass().getResource(pathname.concat(imgName)))));
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
         painelCarro.add(img);
 
         insets = painelCarro.getInsets();
@@ -86,6 +94,12 @@ public class CarroCorrida implements Runnable {
                             colocacao + "º colocado",
                     row.intValue(),
                     1);
+            if (colocacao == 1)
+                painelCarro.setBackground(Color.GREEN);
+            if (colocacao == 2)
+                painelCarro.setBackground(Color.BLUE);
+            if (colocacao == 3)
+                painelCarro.setBackground(Color.YELLOW);
         }
     }
 
@@ -162,13 +176,12 @@ public class CarroCorrida implements Runnable {
             double percent;
             percent = (distanciaPercorrida/distanciaTotal)*100;
             novaPos = ((painelCarro.getWidth()*percent)/distanciaTotal)*100;
-            System.out.println("nova posição da image: "+novaPos);
             return novaPos;
         }
 
         @Override
         protected void done() {
-            img.setBounds((int) (novaPos+insets.left), insets.top, size.width, size.height);
+            img.setBounds((int) (insets.left + novaPos), insets.top, size.width, size.height);
         }
     }
 

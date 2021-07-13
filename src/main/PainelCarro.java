@@ -1,8 +1,7 @@
-package Trabalho_2;
+package main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BaseMultiResolutionImage;
 
 public class PainelCarro extends JPanel implements Runnable {
 

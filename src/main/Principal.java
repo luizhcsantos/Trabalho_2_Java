@@ -1,4 +1,4 @@
-package Trabalho_2;
+package main;
 
 import javax.swing.*;
 import java.util.logging.Logger;
