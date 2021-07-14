@@ -1,11 +1,15 @@
 package main;
 
+import javax.print.attribute.IntegerSyntax;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class InterfaceCorrida extends JFrame implements ActionListener {
 
@@ -170,7 +174,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
         for (int i=0; i< numCarros; i++) {
 
             Component[] comps = painelFiguras.getComponents();
-            if (comps.length > 0 && numeroCorrida > 0 && !corridaAtiva) {
+            if (comps.length > 0 && numeroCorrida > 0 && !corridaAtiva) {  // se o usuário já iniciou uma corrida antes, remove as imagens
                 for (Component c : comps) {
                     if (c instanceof  JPanel) {
                         painelFiguras.remove(c);
@@ -179,12 +183,13 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
                 painelFiguras.revalidate();
                 painelFiguras.repaint();
             }
-
             JPanel painelCarro = new JPanel();
             painelCarro.setBackground(Color.darkGray);
-            painelCarro.setSize(new Dimension(500,
-                    painelFiguras.getHeight()/numCarros+1));
-            painelCarro.setBorder(BorderFactory.createDashedBorder(new Color(153, 153, 153)));
+            painelCarro.setSize(new Dimension(500, painelFiguras.getHeight()/numCarros));
+            Border empty = BorderFactory.createEmptyBorder(1, -1, -1, -1);
+            Border dashed = BorderFactory.createDashedBorder(null, 5, 5);
+            Border compound = new CompoundBorder(empty, dashed);
+            painelCarro.setBorder(compound); // apenas as bordas top e bottom são desenhadas com linha tracejada
             painelCarro.setLayout(null);
             painelFiguras.add(painelCarro);
             painelFiguras.revalidate();
@@ -203,22 +208,30 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
         @Override
         public boolean verify(JComponent input) {
+
             JTextField jtf = (JTextField) input;
 
-            if ("numVoltas".equals(jtf.getName())) {
-                return !jtf.getText().equals("") && Integer.parseInt(jtf.getText()) >= 10;
-            }
-            else if ("numCarros".equals(jtf.getName())) {
-                return !jtf.getText().equals("") && Integer.parseInt(jtf.getText()) >= 5;
-            }
-            else if ("probQ".equals(jtf.getName())) {
-                return !jtf.getText().equals("") && (!(Double.parseDouble(jtf.getText()) < 0.0))
+            if ("numCarros".equals(jtf.getName()))
+                return !jtf.getText().equals("")
+                        && verificaCaracter(jtf.getText())
+                        && Integer.parseInt(jtf.getText()) >= 5;
+
+            if ("numVoltas".equals(jtf.getName()))
+                return !jtf.getText().equals("")
+                        && verificaCaracter(jtf.getText())
+                        && Integer.parseInt(jtf.getText()) >= 10;
+
+            if ("probQ".equals(jtf.getName()))
+                return !jtf.getText().equals("")
+                        && verificaCaracter(jtf.getText())
+                        && (!(Double.parseDouble(jtf.getText()) < 0.0))
                         && !((Double.parseDouble(jtf.getText())) > 100.0);
-            }
-            else if ("probA".equals(jtf.getName())) {
-                return !jtf.getText().equals("") && (!(Double.parseDouble(jtf.getText()) < 0.0))
+
+            if ("probA".equals(jtf.getName()))
+                return !jtf.getText().equals("")
+                        && verificaCaracter(jtf.getText())
+                        && (!(Double.parseDouble(jtf.getText()) < 0.0))
                         && !((Double.parseDouble(jtf.getText())) > 100.0);
-            }
             return true;
         }
 
@@ -229,7 +242,7 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
 
             if (!ehValido) {
                 bordaOriginal = bordaOriginal == null ? source.getBorder() : bordaOriginal;
-                source.setBorder(BorderFactory.createLineBorder(Color.red, 2));
+                source.setBorder(BorderFactory.createLineBorder(Color.red, 5));
             }
             else {
                 if (bordaOriginal != null) {
@@ -238,6 +251,19 @@ public class InterfaceCorrida extends JFrame implements ActionListener {
                 }
             }
             return ehValido;
+        }
+
+        public boolean verificaCaracter(String c) {
+
+            Pattern letras = Pattern.compile("[a-zA-z]");
+            Pattern especiais = Pattern.compile ("[!@#$%&*()ç¹²³£¢¬ºª°/,;.₢_+=|<>?{}\\[\\]~-]");
+            Pattern espaco = Pattern.compile("[ ]");
+
+            Matcher temLetras = letras.matcher(c);
+            Matcher temEspeciais = especiais.matcher(c);
+            Matcher temEspaco = espaco.matcher(c);
+
+            return !temLetras.find() && !temEspeciais.find() && !temEspaco.find();
         }
     }
 }

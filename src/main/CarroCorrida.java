@@ -14,16 +14,14 @@ import static java.lang.Thread.sleep;
 
 public class CarroCorrida implements Runnable {
 
-
     private final String nome;
     private static double distanciaPercorrida;
     private final int distanciaTotalPercorrida;
-    private static int colocacao;
+    private static AtomicInteger coloc;
     private final AtomicInteger row;
     private int mov;
     private double probQuebra;
     private double probAbastecimento;
-    private static boolean estaDormindo;
 
     private final JLabel img = new JLabel();
     private final JPanel painelCarro;
@@ -36,11 +34,10 @@ public class CarroCorrida implements Runnable {
 
         this.nome = nome;
         this.distanciaTotalPercorrida = distanciaTotalPercorrida;
-        distanciaPercorrida = 0.0; // new AtomicInteger(0);
-        colocacao = 0;
+        distanciaPercorrida = 0.0;
+        coloc = new AtomicInteger(0);
         row = new AtomicInteger(0);
         mov = 0;
-        estaDormindo = true;
 
         if (probQuebra > 1.0 && probQuebra <= 100.0)
             this.probQuebra = probQuebra/100.0;
@@ -51,7 +48,7 @@ public class CarroCorrida implements Runnable {
         this.tableModel = tableModel;
 
         img.setText("");
-        img.setPreferredSize(new Dimension(90, 50));
+        img.setPreferredSize(new Dimension(82, painelCarro.getHeight()));
         String pathname = "/resources/images/";
         String imgName = "car"+ (new Random().nextInt(6-1)+1)+".png";
         try {
@@ -67,7 +64,7 @@ public class CarroCorrida implements Runnable {
     }
 
     public void carrosCorrendo() {
-        int MOV_MAXIMO = 50;
+        int MOV_MAXIMO = 40;
         mov = (int) (Math.random()* MOV_MAXIMO);
         distanciaPercorrida += mov;
         if (distanciaPercorrida > distanciaTotalPercorrida) {
@@ -75,23 +72,23 @@ public class CarroCorrida implements Runnable {
         }
     }
 
-    public void carroDesacelerando() {
+    /*public void carroDesacelerando() {
         Thread.yield();
-    }
+    }*/
 
     public void colocacaoCarro() {
         synchronized (row) {
-            row.set(colocacao);
-            colocacao++;
+            row.set(coloc.get());
+            coloc.getAndIncrement();
             tableModel.setValueAt(nome + " é o " +
-                            colocacao + "º colocado",
+                            coloc.get() + "º colocado",
                     row.intValue(),
                     1);
-            switch (colocacao) {
-                case 1 -> painelCarro.setBackground(Color.GREEN);
-                case 2 -> painelCarro.setBackground(Color.BLUE);
-                case 3 -> painelCarro.setBackground(Color.YELLOW);
-            }
+            /*switch (coloc.get()) {
+                case 1 -> painelCarro.setBackground(new Color(86, 122, 206));
+                case 2 -> painelCarro.setBackground(new Color(86, 206, 86));
+                case 3 -> painelCarro.setBackground(new Color(158, 86, 206));
+            }*/
         }
     }
 
@@ -103,13 +100,11 @@ public class CarroCorrida implements Runnable {
                 carrosCorrendo();
                 ProgressoWorker pw = new ProgressoWorker(distanciaTotalPercorrida, painelCarro, img);
                 pw.execute();
-                estaDormindo = false;
             } else {
-                carroDesacelerando();
+                //carroDesacelerando();
                 try {
                     int sleepTime = 100; // milissegundos
                     sleep(l * sleepTime);
-                    estaDormindo = true;
                     TabelaWorker tw = new TabelaWorker(l);
                     tw.execute();
                 } catch (InterruptedException e) {
@@ -119,7 +114,6 @@ public class CarroCorrida implements Runnable {
         }
         colocacaoCarro();
     }
-
 
     class TabelaWorker extends SwingWorker<String, Void> {
 
@@ -155,8 +149,6 @@ public class CarroCorrida implements Runnable {
         JPanel painelCarro;
         JLabel img;
         double novaPos;
-        int OFFSET = 10;
-
 
         public ProgressoWorker(int distanciaTotal, JPanel painelCarro, JLabel img) {
             this.distanciaTotal = distanciaTotal;
@@ -164,25 +156,22 @@ public class CarroCorrida implements Runnable {
             this.img = img;
         }
 
-
         @Override
         protected Double doInBackground() {
 
             double percent;
             percent = (distanciaPercorrida/distanciaTotal)*100;
             novaPos = ((painelCarro.getWidth()*percent)/distanciaTotal)*100;
-            return novaPos+OFFSET;
+            return novaPos;
         }
 
         @Override
         protected void done() {
-            if (!estaDormindo) {
-                img.setBounds((int) (insets.left + novaPos)-img.getWidth(), insets.top, size.width, size.height);
-            }
+            if (!Thread.currentThread().getState().equals(Thread.State.TIMED_WAITING))
+                img.setBounds((int) (insets.left + novaPos)-img.getWidth(),
+                        insets.top, size.width, size.height);
         }
     }
-
-
 
     public long calculaProb(double probAbastecimento, double probQuebra) {
 
